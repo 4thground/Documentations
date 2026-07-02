@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1280">
 <style>
-  /* APPLE TV / CINEMATIC DECK - NO TAILWIND SCALE ISSUES */
+  /* APPLE TV / CINEMATIC DECK */
   :root {
     --bg: #000;
     --text: #fff;
@@ -23,7 +23,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* LOCKED LANDSCAPE SLIDE - NO OVERFLOW */
+  /* SCREEN: 1280x720 SLIDE */
   .slide { 
     width: 1280px; 
     height: 720px; 
@@ -35,7 +35,7 @@
     padding: 60px;
     box-sizing: border-box;
     background: radial-gradient(1400px 700px at 50% -20%, rgba(255,255,255,0.04), transparent 60%), #000;
-    overflow: hidden !important; /* KEY FIX 1: CUTS OFF TEXT */
+    overflow: hidden;
     page-break-after: always;
     break-after: page;
   }
@@ -54,6 +54,7 @@
     z-index: 1;
   }
 
+  /* GLASS CARDS - SCREEN */
   .glass { 
     background: var(--glass); 
     backdrop-filter: blur(24px) saturate(180%); 
@@ -80,19 +81,42 @@
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
   .glass-pad { padding: 22px; text-align: left; }
 
-  /* PRINT LOCK - KEY FIX 2: 1 SLIDE = 1 PAGE */
+  /* PRINT: A4 LANDSCAPE + FORCE BLACK EVERYTHING */
   @media print {
-    @page { size: A4 landscape; margin: 0; }
-    html, body { width: 1280px; height: 720px; }
-    .slide { 
-      width: 1280px; 
-      height: 720px; 
+    @page { 
+      size: A4 landscape; 
+      margin: 0; /* No white borders */
+    }
+    html, body { 
+      width: 297mm; 
+      height: 210mm; /* Exact A4 Landscape */
       background: #000 !important; 
-      color: #fff !important; 
       -webkit-print-color-adjust: exact; 
       print-color-adjust: exact; 
-      overflow: hidden !important;
     }
+    .slide { 
+      width: 297mm; 
+      height: 210mm; /* Match paper exactly */
+      padding: 14mm; /* Safe area */
+      background: #000 !important; 
+      overflow: hidden !important;
+      -webkit-print-color-adjust: exact; 
+      print-color-adjust: exact; 
+      page-break-after: always;
+      break-after: page;
+    }
+    .slide:last-child { page-break-after: auto; }
+
+    /* KEY FIX: FORCE GLASS SOLID BLACK IN PRINT */
+    .glass { 
+      background: rgba(25,25,25,0.98) !important; /* Solid dark, not transparent */
+      backdrop-filter: none !important; /* iPhone can't print blur */
+      -webkit-backdrop-filter: none !important;
+      border: 1px solid rgba(255,255,255,0.25) !important;
+      -webkit-print-color-adjust: exact; 
+      print-color-adjust: exact; 
+    }
+    .slide::before { border-color: rgba(255,255,255,0.25) !important; }
         * { -webkit-print-color-adjust: exact; }
   }
 </style>
@@ -141,7 +165,7 @@
   </div>
 </section>
 
-<!-- SLIDE 5: FILM JOURNEY - FIXED: ADDED 6TH CARD + CLOSED DIV -->
+<!-- SLIDE 5: FILM JOURNEY -->
 <section class="slide">
   <div class="content-wrap">
     <h2 class="glow-text" style="text-align: center; margin-bottom: 20px;">Film’s Journey with 4TH GROUND</h2>
@@ -151,7 +175,7 @@
       <div class="glass glass-pad"><b style="font-size: 24px;">3. Premiere Marketing</b><p class="glow-text" style="font-size: 20px; margin-top: 6px;">2-4 week window</p></div>
       <div class="glass glass-pad"><b style="font-size: 24px;">4. Delivery & Pitch</b><p class="glow-text" style="font-size: 20px; margin-top: 6px;">Via certified partners</p></div>
       <div class="glass glass-pad"><b style="font-size: 24px;">5. Wide Release</b><p class="glow-text" style="font-size: 20px; margin-top: 6px;">Major platforms + Our TVOD</p></div>
-      <div class="glass glass-pad" style="border: 1.5px solid rgba(255,255,255,0.2);"><b style="font-size: 24px;">Note:</b><p class="glow-text" style="font-size: 20px; margin-top: 6px;">We work with certified delivery partners.</p></div>
+      <div class="glass glass-pad" style="border: 1.5px solid rgba(255,255,255,0.3);"><b style="font-size: 24px;">Note:</b><p class="glow-text" style="font-size: 20px; margin-top: 6px;">We work with certified delivery partners.</p></div>
     </div>
   </div>
 </section>
