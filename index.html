@@ -2,11 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1280, height=720">
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=1280">
 <style>
-  /* APPLE TV / CINEMATIC DECK */
+  /* APPLE TV / CINEMATIC DECK - NO TAILWIND SCALE ISSUES */
   :root {
     --bg: #000;
     --text: #fff;
@@ -16,35 +14,38 @@
     --text-glow: 0 2px 20px rgba(0,0,0,0.7), 0 0 3px rgba(255,255,255,0.35);
   }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
   body { 
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
     background: var(--bg); 
     color: var(--text); 
-    margin: 0;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* LANDSCAPE SLIDE = 1280x720 = 16:9 */
+  /* LOCKED LANDSCAPE SLIDE - NO OVERFLOW */
   .slide { 
     width: 1280px; 
     height: 720px; 
-    page-break-after: always;
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 72px;
+    padding: 60px;
     box-sizing: border-box;
     background: radial-gradient(1400px 700px at 50% -20%, rgba(255,255,255,0.04), transparent 60%), #000;
+    overflow: hidden !important; /* KEY FIX 1: CUTS OFF TEXT */
+    page-break-after: always;
+    break-after: page;
   }
-  .slide:last-child { page-break-after: auto; }
+  .slide:last-child { page-break-after: auto; break-after: auto; }
 
   /* SHINY PAGE BOUNDARY FRAME */
   .slide::before {
     content: '';
     position: absolute;
-    inset: 28px; /* inner margin */
+    inset: 28px;
     border-radius: 36px;
     border: 1.5px solid var(--border);
     box-shadow: var(--glow), inset 0 0 0 1px rgba(255,255,255,0.03);
@@ -53,173 +54,120 @@
     z-index: 1;
   }
 
-  /* GLASS CARDS */
   .glass { 
     background: var(--glass); 
     backdrop-filter: blur(24px) saturate(180%); 
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--border); 
     border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   }
 
-  /* SHINY TEXT BOUNDARY */
   .glow-text { text-shadow: var(--text-glow); }
 
-  /* CENTERED HEADER + LOGO */
-  .header-center {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-    text-align: center;
-    z-index: 2;
-  }
-  .logo-round { 
-    width: 140px;
-    height: 140px;
-    border-radius: 9999px; 
-    object-fit: cover; 
-    border: 2px solid var(--border);
-    box-shadow: 0 0 0 10px rgba(255,255,255,0.04), 0 24px 80px rgba(0,0,0,0.6);
-  }
-  .brand-title {
-    font-size: 84px;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
-  .brand-sub {
-    font-size: 30px;
-    font-weight: 500;
-    opacity: 0.85;
-    max-width: 900px;
-  }
+  .header-center { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; z-index: 2; }
+  .logo-round { width: 120px; height: 120px; border-radius: 9999px; object-fit: cover; border: 2px solid var(--border); }
+  .brand-title { font-size: 80px; font-weight: 900; letter-spacing: -0.02em; line-height: 1; }
+  .brand-sub { font-size: 28px; font-weight: 500; opacity: 0.85; max-width: 900px; }
 
-  /* BIG BODY TEXT - ALL GLOW */
-  h1, h2, h3, p, li, b { text-shadow: var(--text-glow); }
-  h2 { font-size: 56px; font-weight: 800; line-height: 1.1; margin: 0 0 24px; }
-  h3 { font-size: 36px; font-weight: 700; line-height: 1.2; margin: 0; }
-  p, li { font-size: 30px; line-height: 1.4; font-weight: 500; opacity: 0.92; }
-  .text-sm { font-size: 24px !important; }
-  .text-lg { font-size: 32px !important; }
-  .text-xl { font-size: 34px !important; }
-  .text-2xl { font-size: 36px !important; }
+  h2 { font-size: 52px; font-weight: 800; line-height: 1.1; margin: 0 0 20px; }
+  h3 { font-size: 32px; font-weight: 700; line-height: 1.2; margin: 0 0 8px; }
+  p { font-size: 26px; line-height: 1.35; font-weight: 500; opacity: 0.92; }
+  ul { list-style: none; display: grid; gap: 14px; }
+  li { font-size: 24px; }
 
-  .content-wrap {
-    z-index: 2;
-    width: 100%;
-    max-width: 1120px;
-  }
+  .content-wrap { z-index: 2; width: 100%; max-width: 1080px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+  .glass-pad { padding: 22px; text-align: left; }
 
-  /* PRINT FORCE BLACK + LANDSCAPE */
+  /* PRINT LOCK - KEY FIX 2: 1 SLIDE = 1 PAGE */
   @media print {
-    @page { size: 1280px 720px landscape; margin: 0; }
-    html, body, .slide { 
+    @page { size: A4 landscape; margin: 0; }
+    html, body { width: 1280px; height: 720px; }
+    .slide { 
+      width: 1280px; 
+      height: 720px; 
       background: #000 !important; 
       color: #fff !important; 
       -webkit-print-color-adjust: exact; 
       print-color-adjust: exact; 
+      overflow: hidden !important;
     }
-    .slide::before { border-color: rgba(255,255,255,0.22) !important; }
-    * { -webkit-print-color-adjust: exact; }
+        * { -webkit-print-color-adjust: exact; }
   }
 </style>
 </head>
-<body class="bg-black">
+<body>
 
-<!-- SLIDE 1: TITLE - CENTERED APPLE STYLE -->
+<!-- SLIDE 1: TITLE -->
 <section class="slide">
   <div class="header-center">
     <img src="posters/logo.png" class="logo-round" alt="4TH GROUND Logo" />
     <h1 class="brand-title glow-text">4TH GROUND</h1>
     <p class="brand-sub glow-text">Partnership Proposal</p>
-    <p class="text-sm opacity-70 glow-text">Film Distribution | Filmmaker-Focused</p>
+    <p style="font-size: 22px; opacity: 0.7;" class="glow-text">Film Distribution | Filmmaker-Focused</p>
   </div>
 </section>
 
-<!-- SLIDE 2: WHO WE ARE - FROM SERVICES PAGE -->
-<section class="slide p-16 justify-center">
-  <div class="content-wrap">
-    <div class="flex items-center gap-5 mb-8 justify-center">
-      <svg class="w-14 h-14 opacity-90" fill="none" stroke="currentColor"><path stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
-      <h2 class="glow-text">Global Reach</h2>
-    </div>
-    <p class="text-xl text-zinc-300 mb-6 text-center glow-text">At 4TH GROUND, we provide global film distribution solutions tailored for independent filmmakers and production companies looking to expand their reach across international markets.</p>
-    <p class="text-lg text-zinc-400 text-center glow-text">Our mission is to help powerful stories connect with audiences worldwide through strategic digital distribution and professional delivery services.</p>
+<!-- SLIDE 2: WHO WE ARE -->
+<section class="slide">
+  <div class="content-wrap" style="text-align: center;">
+    <h2 class="glow-text">Global Reach</h2>
+    <p class="glow-text" style="margin-bottom: 16px;">At 4TH GROUND, we provide global film distribution solutions tailored for independent filmmakers and production companies looking to expand their reach across international markets.</p>
+    <p class="glow-text" style="opacity: 0.8; font-size: 24px;">Our mission is to help powerful stories connect with audiences worldwide through strategic digital distribution and professional delivery services.</p>
   </div>
 </section>
 
-<!-- SLIDE 3: OUR SERVICES - EXACT FROM YOUR SITE -->
-<section class="slide p-12 justify-center">
+<!-- SLIDE 3: OUR SERVICES -->
+<section class="slide">
   <div class="content-wrap">
-    <h2 class="text-center mb-8 glow-text">Our Services</h2>
-    <div class="grid grid-cols-2 gap-6 text-base">
-      <div class="glass p-7">
-        <h3 class="font-bold mb-2 glow-text">1. Pre-Sale Movie Store / TVOD</h3>
-        <p class="text-zinc-400 glow-text">Filmmakers earn while we position films for major platforms. Filmmakers suggest their own rental and purchase prices.</p>
-      </div>
-      <div class="glass p-7">
-        <h3 class="font-bold mb-2 glow-text">2. Distribution Channels</h3>
-        <p class="text-zinc-400 glow-text">SVOD, AVOD, TVOD, FAST Channels, inflight entertainment.</p>
-      </div>
-      <div class="glass p-7">
-        <h3 class="font-bold mb-2 glow-text">3. Technical Delivery</h3>
-        <p class="text-zinc-400 glow-text">Encoding, QC, subtitles/CC, metadata, delivery packaging. To meet all platform specifications.</p>
-      </div>
-      <div class="glass p-7">
-        <h3 class="font-bold mb-2 glow-text">4. Marketing & Strategy</h3>
-        <p class="text-zinc-400 glow-text">Positioning, trailers, artwork, promotional planning. We strengthen discoverability.</p>
-      </div>
-      <div class="glass p-7">
-        <h3 class="font-bold mb-2 glow-text">5. Inflight Entertainment</h3>
-        <p class="text-zinc-400 glow-text">Airline systems for additional exposure beyond streaming.</p>
-      </div>
-      <div class="glass p-7">
-        <h3 class="font-bold mb-2 glow-text">6. Filmmaker-First Approach</h3>
-        <p class="text-zinc-400 glow-text">Collaborative, hand-in-hand support from onboarding to release. Build lasting partnerships.</p>
-      </div>
+    <h2 class="glow-text" style="text-align: center; margin-bottom: 24px;">Our Services</h2>
+    <div class="grid-2">
+      <div class="glass glass-pad"><h3 class="glow-text">1. Pre-Sale Movie Store / TVOD</h3><p class="glow-text" style="font-size: 22px;">Filmmakers earn while we position films for major platforms. Filmmakers suggest their own rental and purchase prices.</p></div>
+      <div class="glass glass-pad"><h3 class="glow-text">2. Distribution Channels</h3><p class="glow-text" style="font-size: 22px;">SVOD, AVOD, TVOD, FAST Channels, inflight entertainment.</p></div>
+      <div class="glass glass-pad"><h3 class="glow-text">3. Technical Delivery</h3><p class="glow-text" style="font-size: 22px;">Encoding, QC, subtitles/CC, metadata, delivery packaging. To meet all platform specifications.</p></div>
+      <div class="glass glass-pad"><h3 class="glow-text">4. Marketing & Strategy</h3><p class="glow-text" style="font-size: 22px;">Positioning, trailers, artwork, promotional planning. We strengthen discoverability.</p></div>
+      <div class="glass glass-pad"><h3 class="glow-text">5. Inflight Entertainment</h3><p class="glow-text" style="font-size: 22px;">Airline systems for additional exposure beyond streaming.</p></div>
+      <div class="glass glass-pad"><h3 class="glow-text">6. Filmmaker-First Approach</h3><p class="glow-text" style="font-size: 22px;">Collaborative, hand-in-hand support from onboarding to release. Build lasting partnerships.</p></div>
     </div>
   </div>
 </section>
 
 <!-- SLIDE 4: PROPOSAL -->
-<section class="slide p-16 justify-center">
-  <div class="content-wrap text-center">
-    <div class="flex items-center gap-5 mb-8 justify-center">
-      <svg class="w-14 h-14 opacity-90" fill="none" stroke="currentColor"><path stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-      <h2 class="glow-text">Our Proposal</h2>
-    </div>
-    <p class="text-2xl text-zinc-300 leading-relaxed glow-text">Access to your Feature Film catalog, operating fully within your premiere, windowing, and submission policies. We act as your distribution partner to extend film life and revenue post-festival.</p>
+<section class="slide">
+  <div class="content-wrap" style="text-align: center;">
+    <h2 class="glow-text">Our Proposal</h2>
+    <p class="glow-text" style="font-size: 30px; max-width: 900px; margin: 0 auto;">Access to your Feature Film catalog, operating fully within your premiere, windowing, and submission policies. We act as your distribution partner to extend film life and revenue post-festival.</p>
   </div>
 </section>
 
-<!-- SLIDE 5: FILM JOURNEY - FROM YOUR SITE -->
-<section class="slide p-12 justify-center">
+<!-- SLIDE 5: FILM JOURNEY - FIXED: ADDED 6TH CARD + CLOSED DIV -->
+<section class="slide">
   <div class="content-wrap">
-    <h2 class="text-center mb-6 glow-text">Film’s Journey with 4TH GROUND</h2>
-    <div class="grid grid-cols-3 gap-5 text-sm">
-      <div class="glass p-6 rounded-xl"><b class="text-lg">1. Light QC</b><p class="text-zinc-400 mt-1 glow-text">For TVOD pre-sale</p></div>
-      <div class="glass p-6 rounded-xl"><b class="text-lg">2. Pre-Sale TVOD</b><p class="text-zinc-400 mt-1 glow-text">Immediate rental live</p></div>
-      <div class="glass p-6 rounded-xl"><b class="text-lg">3. Premiere Marketing</b><p class="text-zinc-400 mt-1 glow-text">2-4 week window</p></div>
-      <div class="glass p-6 rounded-xl"><b class="text-lg">4. Delivery & Pitch</b><p class="text-zinc-400 mt-1 glow-text">Via certified partners</p></div>
-      <div class="glass p-6 rounded-xl"><b class="text-lg">5. Wide Release</b><p class="text-zinc-400 mt-1 glow-text">Major platforms + Our TVOD platform</p></div>
-      
+    <h2 class="glow-text" style="text-align: center; margin-bottom: 20px;">Film’s Journey with 4TH GROUND</h2>
+    <div class="grid-3">
+      <div class="glass glass-pad"><b style="font-size: 24px;">1. Light QC</b><p class="glow-text" style="font-size: 20px; margin-top: 6px;">For TVOD pre-sale</p></div>
+      <div class="glass glass-pad"><b style="font-size: 24px;">2. Pre-Sale TVOD</b><p class="glow-text" style="font-size: 20px; margin-top: 6px;">Immediate rental live</p></div>
+      <div class="glass glass-pad"><b style="font-size: 24px;">3. Premiere Marketing</b><p class="glow-text" style="font-size: 20px; margin-top: 6px;">2-4 week window</p></div>
+      <div class="glass glass-pad"><b style="font-size: 24px;">4. Delivery & Pitch</b><p class="glow-text" style="font-size: 20px; margin-top: 6px;">Via certified partners</p></div>
+      <div class="glass glass-pad"><b style="font-size: 24px;">5. Wide Release</b><p class="glow-text" style="font-size: 20px; margin-top: 6px;">Major platforms + Our TVOD</p></div>
+      <div class="glass glass-pad" style="border: 1.5px solid rgba(255,255,255,0.2);"><b style="font-size: 24px;">Note:</b><p class="glow-text" style="font-size: 20px; margin-top: 6px;">We work with certified delivery partners.</p></div>
+    </div>
   </div>
 </section>
 
 <!-- SLIDE 6: FESTIVAL BENEFITS -->
-<section class="slide p-14 justify-center">
+<section class="slide">
   <div class="content-wrap">
-    <h2 class="text-center mb-8 glow-text">How Festivals Benefit</h2>
-    <ul class="space-y-4 text-xl text-zinc-300 max-w-4xl mx-auto">
-      <li class="glow-text">1. <b>Revenue Extension:</b> TVOD pre-sale + platform placement post-festival</li>
-      <li class="glow-text">2. <b>Filmmaker Support:</b> Physical or Virtual workshops on distribution</li>
-      <li class="glow-text">3. <b>Higher submission volume:</b> We believe a clear distribution pathway increases filmmaker trust and entry rates</li>
-      <li class="glow-text">4. <b>Stronger festival catalog:</b> More submissions means more curation choice</li>
-      <li class="glow-text">5. <b>Marketing Co-Promotion:</b> We amplify selected festival films with trailers, artwork, and platform positioning after the event.</li>
-      <li class="glow-text">6. <b>Filmmaker Retention:</b> Offer real value beyond the screening. Filmmakers return next year because you helped launch their film.</li>
-      <li class="glow-text">7. <b>Attract More Sponsors & Partners:</b> A festival with a global distribution pathway becomes a stronger brand to sponsor.</li>
+    <h2 class="glow-text" style="text-align: center; margin-bottom: 20px;">How Festivals Benefit</h2>
+    <ul style="max-width: 900px; margin: 0 auto; text-align: left;">
+      <li class="glow-text"><b>1. Revenue Extension:</b> TVOD pre-sale + platform placement post-festival</li>
+      <li class="glow-text"><b>2. Filmmaker Support:</b> Physical or Virtual workshops on distribution</li>
+      <li class="glow-text"><b>3. Higher submissions:</b> Clear distribution pathway increases trust</li>
+      <li class="glow-text"><b>4. Stronger catalog:</b> More submissions = more curation choice</li>
+      <li class="glow-text"><b>5. Co-Promotion:</b> We amplify films with trailers & artwork</li>
+      <li class="glow-text"><b>6. Filmmaker Retention:</b> Value beyond screening brings them back</li>
+      <li class="glow-text"><b>7. More Sponsors:</b> Global pathway makes festival a stronger brand</li>
     </ul>
   </div>
 </section>
@@ -228,8 +176,8 @@
 <section class="slide">
   <div class="header-center">
     <h2 class="brand-title glow-text">4TH GROUND</h2>
-    <div class="glass rounded-2xl px-12 py-7 mt-8 text-lg">
-      <p class="glow-text">www.4thground.com</p>
+    <div class="glass" style="padding: 28px 48px; margin-top: 20px;">
+      <p class="glow-text" style="font-size: 32px;">www.4thground.com</p>
     </div>
   </div>
 </section>
